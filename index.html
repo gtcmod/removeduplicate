@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+<meta name="viewport" content="width=device-width, initial-scale=0.8">
   <title>Remover Palavras Repetidas</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
   <style>
-    body {
+body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
+      align-items: flex-start; /* Modificado para alinhar no início */
+      min-height: 100vh; /* Modificado para altura mínima de 100% da viewport */
       background-color: #f5f5f5;
+      overflow-y: auto; /* Adicionado para adicionar rolagem vertical à página */
     }
 
     #conteudo {
-      max-width: 80%;
+      width: 100%;
+      max-width: 1200px; /* Definindo uma largura máxima para o conteúdo */
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
+      justify-content: space-around; /* Espaço entre os elementos */
+      flex-wrap: wrap; /* Para que os elementos quebrem para a próxima linha, se necessário */
+      padding: 20px; /* Adicionado para espaçamento interno */
+      box-sizing: border-box; /* Inclui padding e border na largura total */
+    }
+
+    .info, .resultado {
+      flex: 1; /* Ocupa o espaço disponível igualmente */
+      max-width: 45%; /* Largura máxima para cada elemento */
+      min-width: 250px; /* Largura mínima para cada elemento */
+    }
+
+    .info p, .resultado p {
+      margin-bottom: 10px; /* Adicionando espaço entre os parágrafos */
+    }
+
+    .info p::after,
+    .resultado p::after {
+      content: "\00a0\00a0\00a0"; /* Adicionando espaçamento entre os títulos e os valores */
     }
 
     textarea {
