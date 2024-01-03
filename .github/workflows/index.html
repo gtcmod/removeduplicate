@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Remover Palavras Repetidas</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+
+    #conteudo {
+      max-width: 80%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    textarea {
+      width: 250px;
+      height: 250px;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+    }
+
+    .info, .resultado {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 200px;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    /* Adiciona barra de rolagem vertical apenas quando necessário */
+    textarea, .resultado textarea {
+      overflow-y: auto;
+    }
+  </style>
+  <script>
+    function removerPalavrasRepetidas() {
+      let inputText = document.getElementById('inputText').value.toLowerCase();
+      
+      // Substitui as aspas simples, aspas duplas e acentos
+      inputText = inputText.replace(/[`'"\u2018\u2019\u201C\u201D]/g, "");
+
+      let palavras = inputText.split(/[ ,;\n]+/);
+      
+      let palavrasLimpas = [];
+      let palavrasSemRepeticao = [];
+
+      palavras.forEach(function(palavra) {
+        // Remove acentuação, cedilha, hífen e til
+        let palavraLimpa = palavra.normalize("NFD").replace(/[\u0300-\u036f]|[-~]/g, "");
+        
+        if (palavraLimpa.trim() !== '' && !palavrasLimpas.includes(palavraLimpa)) {
+          palavrasLimpas.push(palavraLimpa);
+          palavrasSemRepeticao.push(palavra);
+        }
+      });
+
+      document.getElementById('resultado').value = palavrasSemRepeticao.join('\n');
+      document.getElementById('totalPalavras').innerText = `Total de palavras: ${palavrasSemRepeticao.length}`;
+
+      // Contador de palavras inseridas
+      document.getElementById('contadorInseridas').innerText = palavras.length;
+
+      // Contador de palavras removidas
+      let palavrasRemovidas = palavras.length - palavrasSemRepeticao.length;
+      document.getElementById('contadorRemovidas').innerText = palavrasRemovidas;
+    }
+
+    function removerPalavra() {
+      let palavraRemover = document.getElementById('palavraRemover').value.toLowerCase().trim();
+      let textoEntrada = document.getElementById('inputText').value.toLowerCase();
+      let palavras = textoEntrada.split(/[ ,;\n]+/);
+      let indice = palavras.indexOf(palavraRemover);
+
+      if (indice !== -1) {
+        palavras.splice(indice, 1);
+        document.getElementById('inputText').value = palavras.join('\n');
+        removerPalavrasRepetidas();
+      }
+    }
+
+    function verificarRepetida() {
+      let palavraVerificar = document.getElementById('palavraVerificar').value.toLowerCase().trim();
+      let textoEntrada = document.getElementById('inputText').value.toLowerCase();
+      let palavras = textoEntrada.split(/[ ,;\n]+/);
+
+      if (palavras.includes(palavraVerificar)) {
+        alert("A palavra está repetida na lista.");
+      } else {
+        alert("A palavra não está repetida na lista.");
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="conteudo">
+    <div class="info">
+      <h1>Remover Palavras Repetidas</h1>
+      <p>Insira as palavras no campo abaixo:</p>
+      <textarea id="inputText" rows="10" maxlength="10000"></textarea><br>
+      <button onclick="removerPalavrasRepetidas()">Remover Repetidas</button><br>
+      <p>Inseridas: <span id="contadorInseridas">0</span></p>
+      <p>Removidas: <span id="contadorRemovidas">0</span></p>
+      <p>Remover palavra:</p>
+      <input type="text" id="palavraRemover">
+      <button onclick="removerPalavra()">Remover</button><br>
+      <p>Verificar repetida:</p>
+      <input type="text" id="palavraVerificar">
+      <button onclick="verificarRepetida()">Verificar</button>
+    </div>
+    <div class="resultado">
+      <h2>Resultado (sem repetições)</h2>
+      <textarea id="resultado" rows="10" readonly></textarea>
+      <p id="totalPalavras"></p>
+    </div>
+  </div>
+</body>
+</html>
