@@ -42,6 +42,8 @@
     .vertical-text {
       white-space: pre-line;
       overflow-y: auto;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
     }
   </style>
 </head>
@@ -50,7 +52,19 @@
     <h1>Remover Palavras Repetidas</h1>
     <div class="inputs-container">
       <label for="inputWords">Insira as palavras:</label>
-      <textarea id="inputWords" placeholder="Inserir palavras aqui (até 10.000 palavras)" rows="10"></textarea>
+      <textarea id="inputWords" placeholder="Inserir palavras aqui (atÃ© 10.000 palavras)" rows="10"></textarea>
+      <label for="separatorComma">Separador ','</label>
+      <input type="checkbox" id="separatorComma" name="separator" value="comma">
+
+      <label for="separatorBacktick">Separador '`'</label>
+      <input type="checkbox" id="separatorBacktick" name="separator" value="backtick">
+
+      <label for="separatorDoubleQuotes">Separador '"'</label>
+      <input type="checkbox" id="separatorDoubleQuotes" name="separator" value="doubleQuotes">
+
+      <label for="separatorSingleQuotes">Separador '''</label>
+      <input type="checkbox" id="separatorSingleQuotes" name="separator" value="singleQuotes">
+      
       <button id="removeDuplicatesButton">Remover Palavras Repetidas</button>
       <p>Palavras inseridas: <span id="wordCount">0</span></p>
     </div>
@@ -58,49 +72,66 @@
   <div class="right-container">
     <div class="result-container">
       <div class="inputs-container">
-        <label for="outputWords">Palavras sem repetição:</label>
-        <textarea id="outputWords" placeholder="Palavras sem repetição" readonly rows="10" class="vertical-text"></textarea>
-        <p>Total de palavras após remoção: <span id="finalWordCount">0</span></p>
+        <label for="outputWords">Palavras sem repetiÃ§Ã£o:</label>
+        <textarea id="outputWords" placeholder="Palavras sem repetiÃ§Ã£o" readonly rows="10" class="vertical-text"></textarea>
+        <p>Total de palavras apÃ³s remoÃ§Ã£o: <span id="finalWordCount">0</span></p>
       </div>
       <div class="inputs-container middle">
-        <label for="removeSpecificWord">Remover palavra específica:</label>
+        <label for="removeSpecificWord">Remover palavra especÃ­fica:</label>
         <input type="text" id="removeSpecificWord" placeholder="Palavra a ser removida">
-        <button id="removeSpecificButton">Remover Palavra Específica</button>
+        <button id="removeSpecificButton">Remover Palavra EspecÃ­fica</button>
       </div>
     </div>
   </div>
 
   <script>
     function removeDuplicates() {
-      let inputText = document.getElementById('inputWords').value.toLowerCase();
-      let wordsArray = inputText.match(/\b\w+\b/g);
+      let inputText = document.getElementById('inputWords').value;
+      let wordsArray = inputText.match(/(['`",]?\b\w+\b['`",]?)/g);
       let uniqueWords = Array.from(new Set(wordsArray));
 
-      let output = uniqueWords.join('\n'); // Display words vertically
-      document.getElementById('outputWords').value = output;
+      let separator = getSelectedSeparator();
+      let output = uniqueWords.map(word => `${separator}${word}${separator}\n`).join('');
+      document.getElementById('outputWords').value = output.trim();
 
       document.getElementById('finalWordCount').innerText = uniqueWords.length;
+    }
+
+    function getSelectedSeparator() {
+      let checkboxes = document.querySelectorAll('input[name="separator"]:checked');
+      let separator = ' '; // Default separator
+
+      checkboxes.forEach((checkbox) => {
+        if (checkbox.value === 'comma') {
+          separator = ',';
+        } else if (checkbox.value === 'backtick') {
+          separator = '`';
+        } else if (checkbox.value === 'doubleQuotes') {
+          separator = '"';
+        } else if (checkbox.value === 'singleQuotes') {
+          separator = "'";
+        }
+      });
+
+      return separator;
     }
 
     function removeSpecificWord() {
       let specificWord = document.getElementById('removeSpecificWord').value.toLowerCase();
       let outputText = document.getElementById('outputWords').value.toLowerCase();
-      let wordsArray = outputText.match(/\b\w+\b/g);
+      let wordsArray = outputText.split(/\s+/);
 
       if (!specificWord.trim()) {
         alert('Insira uma palavra para remover.');
         return;
       }
 
-      let wordCount = wordsArray.filter(word => word === specificWord).length;
-      if (wordCount === 0) {
-        alert('A palavra especificada não está na lista.');
-      } else {
-        wordsArray = wordsArray.filter(word => word !== specificWord);
-        let output = wordsArray.join('\n');
-        document.getElementById('outputWords').value = output;
-        document.getElementById('finalWordCount').innerText = wordsArray.length;
-      }
+      let updatedWordsArray = wordsArray.filter(word => word.toLowerCase() !== specificWord);
+      let separator = getSelectedSeparator();
+      let output = updatedWordsArray.map(word => `${separator}${word}${separator}`).join('\n');
+      document.getElementById('outputWords').value = output.trim();
+
+      document.getElementById('finalWordCount').innerText = updatedWordsArray.length;
     }
 
     document.getElementById('removeDuplicatesButton').addEventListener('click', removeDuplicates);
